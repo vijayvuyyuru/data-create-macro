@@ -32,8 +32,10 @@ async def connect(api_key_id: str, api_key: str, is_staging: bool) -> ViamClient
 
 
 # if needed, pick a random location from all in the org
-async def pick_location_id(fleet: AppClient) -> Tuple[str, str]:
-    locations = await fleet.list_locations()
+async def pick_location_id(fleet: AppClient, org_name: str) -> Tuple[str, str]:
+    output = subprocess.getoutput("viam organizations list")
+    org_id = get_org_id_from_cli(org_name, output)
+    locations = await fleet.list_locations(org_id=org_id)
     selected_location = random.choice(locations)
     return (selected_location.id, selected_location.name)
 
@@ -203,7 +205,7 @@ async def main():
     fleet = viam_client.app_client
     location_name = ""
     if not location_id:
-        location_id, location_name = await pick_location_id(fleet)
+        location_id, location_name = await pick_location_id(fleet, org_name)
     else:
         # This is slow
         location_name = await get_location_name(fleet, location_id)

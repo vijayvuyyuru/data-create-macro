@@ -2,3 +2,7 @@
 .venv/
 configs/
 __pycache__/
+test_scripts/
+.DS_Store
+data/
+metadata/
